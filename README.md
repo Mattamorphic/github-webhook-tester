@@ -20,23 +20,27 @@ How does this tool address this?
 ### Basic startup
 `github-webhook-tester`
 - This uses the `./example/spec.js` blueprint
+- The `:owner/:repo` will be taken from the .env file
 - Logging is configured for ALL events
 - Logging is defaulted to the console
 - All payloads are logged to the console
 
 ### Specify different spec file
-`github-webhook-tester --spec=path/to/jsspec`
+`github-webhook-tester --repo=:owner/:repo --spec=path/to/jsspec`
 - Same as above, but with a different blueprint
+- The repo is taken from the `--repo=:owner/:repo` option
 - This will use `path/to/jsspec`
 
 ### No console logging
 `github-webhook-tester --noConsoleLogging`
 - Don't print system logs, just webhook payloads
+- The `:owner/:repo` will be taken from the .env file
 - This will use `./example/spec.js`
 
 ### No payload logging, and info level logging  
 `github-webhook-tester --noConsoleOutput --logLevel=4`
 - Don't print payload logs, just system logs
+- The `:owner/:repo` will be taken from the .env file
 - Listen for logs at info level
 - This will use `./example/spec.js`
 
@@ -46,6 +50,7 @@ How does this tool address this?
 - Print system logs to the console
 - Print the payload logs to the output file designated in `--outputFile`
 - This will use `./example/spec.js`
+- The `:owner/:repo` will be taken from the .env file
 
 See a full breakdown of the options below
 
@@ -54,6 +59,8 @@ See a full breakdown of the options below
 - `--logLevel` Specify the level of logging for the system logs (defaults to 5 for ALL logs)
 
 - `--spec` Specify the blueprint file to use for the API (`--spec=./path/bp.js`)
+
+- `--repo` Specify the target repository to manage the hooks on
 
 - `--fileLogging` Specify the file to write the system logs to (`--fileLogging=./logs/log.log`)
 
@@ -103,7 +110,7 @@ From github
 2. Add tests to maintain stability and integrity
 3. Add to npm
 4. Add more spec examples
-5. Add further logging transport layers 
+5. Add further logging transport layers
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

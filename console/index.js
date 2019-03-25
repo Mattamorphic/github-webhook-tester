@@ -58,6 +58,10 @@ const sections = [
         description: 'Turn off console logging for webhook payloads',
       },
       {
+        name: 'repo',
+        description: 'The target repository :owner/:repo',
+      },
+      {
         name: 'help',
         description: 'Print this usage guide.',
       },
@@ -74,6 +78,7 @@ const options = commandLineArgs([
   {name: 'noConsoleLogging', type: Boolean, defaultValue: false},
   {name: 'outputFile', type: String},
   {name: 'noConsoleOutput', type: Boolean, defaultValue: false},
+  {name: 'repo', type: String},
   {name: 'clear', alias: 'd', type: Boolean},
 ]);
 
@@ -82,6 +87,16 @@ if (options.help || options.h) {
   console.log(commandLineUsage(sections));
   process.exit(0);
 }
+
+let owner = process.env.OWNER;
+let repo = process.env.REPO;
+
+const repoStringParts = (options.repo || '').split('/');
+if (repoStringParts.length == 2) {
+  owner = repoStringParts[0];
+  repo = repoStringParts[1];
+}
+
 
 const level = Object.keys(
     LoggingLevels.levelsNumbers,
@@ -155,6 +170,8 @@ module.exports = {
   args: options,
   loggers,
   level,
+  owner,
   payloadLoggers,
+  repo,
   specFile: options.spec,
 };

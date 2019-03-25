@@ -54,7 +54,6 @@ app.use((req, res, next) => {
 });
 
 // Fetch a spec, use './example/spec.js' as default
-console.log(options.specFile);
 const spec = require(options.specFile);
 
 // Validate the spec
@@ -113,7 +112,14 @@ async function genNgrokURL(port) {
 
   // Create our hook manager
   const GitHub = require('../lib/GitHub');
-  const github = new GitHub(process.env.GITHUB_PERSONAL_ACCESS_TOKEN);
+  logger.debug(
+      `Configuring GitHub Hooks with ${options.owner}/${options.repo}`,
+  );
+  const github = new GitHub(
+    process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
+    options.owner,
+    options.repo,
+  );
   const HookManager = require('../lib/HookManager');
   const hookManager = new HookManager(github);
   await hookManager.setup();
