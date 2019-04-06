@@ -11,150 +11,89 @@ const LoggingLevels = require('../lib/logging/LoggingLevels');
 const ConsoleTransport = require('../lib/logging/transports/ConsoleTransport');
 const FileTransport = require('../lib/logging/transports/FileTransport');
 const path = require('path');
-// Sections for our usage guide
-const sections = [
-  {
-    header: 'GitHub Webhook Tester',
-    content: 'Create an API with Ngrok & update/log webhooks on a GitHub Repo',
-  },
-  {
-    header: 'Options',
-    optionList: [
-      {
-        name: 'clear',
-        description: 'NOT IMPLEMENTED: Clear any of the ngrok endpoints '
-          + '- without rebuilding them',
-      },
-      {
-        name: 'logLevel',
-        description: 'Desired logging level - '
-          + Object.keys(
-              LoggingLevels.levelsNumbers,
-          ).map((level) => `${LoggingLevels.levelsNumbers[level]}: ${level}`)
-              .join(', ')
-          + ' Default 5',
-      },
-      {
-        name: 'spec',
-        description: 'The spec file for your api / webhooks - see the readme'
-          + ' for more details. Default: ./example/spec.js',
-      },
-      {
-        name: 'fileLogging',
-        description: 'File for logging denoted by the log level'
-          + ' Eg --fileLogging=./logs/logs.log',
-      },
-      {
-        name: 'noConsoleLogging',
-        description: 'Turn off console logging',
-      },
-      {
-        name: 'outputFile',
-        description: 'File for logging the webhook payloads.'
-          + ' Eg --outputFile=./logs/payloads.log',
-      },
-      {
-        name: 'noConsoleOutput',
-        description: 'Turn off console logging for webhook payloads',
-      },
-      {
-        name: 'help',
-        description: 'Print this usage guide.',
-      },
-    ],
-  },
-];
+
+// Sections / Options for CLI Args
+const args = require('./args');
 
 // Options for our command line args
-const options = commandLineArgs([
-  {name: 'help', alias: 'h', type: Boolean},
-  {name: 'logLevel', alias: 'l', type: Number, defaultValue: 5},
-  {name: 'spec', type: String, defaultValue: './example/spec.js'},
-  {name: 'fileLogging', type: String},
-  {name: 'noConsoleLogging', type: Boolean, defaultValue: false},
-  {name: 'outputFile', type: String},
-  {name: 'noConsoleOutput', type: Boolean, defaultValue: false},
-  {name: 'clear', alias: 'd', type: Boolean},
-]);
+const options = commandLineArgs(args.options);
 
-// If we have a help option - print and quit
-if (options.help || options.h) {
-  console.log(commandLineUsage(sections));
+/**
+ * Print the help
+ */
+if (options.help) {
+  console.log(commandLineUsage(args.sections));
   process.exit(0);
 }
 
-const level = Object.keys(
-    LoggingLevels.levelsNumbers,
-)
-    .find((key) => LoggingLevels.levelsNumbers[key] === options.logLevel);
-
-// Configure API Loggers
-const loggers = [];
-if (!options.noConsoleLogging) {
-  loggers.push(
-      new ConsoleTransport({
-        level,
-      }),
-  );
+/**
+ * Global console suppression
+ */
+if (options.suppressConsole) {
+  options.suppressConsoleLogs = true;
+  options.suppressConsoleHooks = true;
 }
 
-if (options.fileLogging) {
-  loggers.push(
-      new FileTransport({
-        level,
-        path: path.resolve(options.fileLogging),
-      }),
-  );
+/**
+ * Repo vaidation
+ */
+const validRepo = (
+  options.repo
+  && options.repo.length === 2
+  && options.repo[0] != null
+  && options.repo[0].length > 1
+  && options.repo[1] != null
+  && options.repo[1].length > 1
+);
+if (!validRepo) {
+  console.log('--repo must be provided as owner/repo');
+  process.exit(0);
 }
 
-if (loggers.length === 0) {
-  console.log(
-      'Warning: Suggest using either --consoleLogging '
-      + 'and/or --fileLogging to monitor setup process',
-  );
+
+if (!options.token) {
+  console.log('--token github oauth must be provided with repo scope');
+  process.exit(0);
+  // Add ability to prompt
+  // const input = require('./input');
+  // options.token = input.muted('token');
 }
 
-// Configure Webhook Payload Loggers
-const payloadLoggers = [];
-if (options.outputFile) {
-  payloadLoggers.push(
-      new FileTransport({
-        level: LoggingLevels.levels.info,
-        path: path.resolve(options.outputFile),
-      }),
-  );
-}
-
-if (!options.noConsoleOutput) {
-  payloadLoggers.push(
-      new ConsoleTransport({
-        level: LoggingLevels.levels.info,
-      }),
-  );
-}
-
-if (payloadLoggers.length === 0) {
-  console.log(
-      'Warning: Suggest using either --outputConsole '
-      + 'and/or --outputFile to monitor incoming payloads',
-  );
-}
-
-// Check the spec file exists and is readable
-try {
-  const fs = require('fs');
-  fs.accessSync(options.spec, fs.constants.F_OK | fs.constants.R_OK);
-  options.spec = path.resolve(options.spec);
-} catch (err) {
-  throw new Error(
-      `No access to ${options.spec} check it exists, and is readable`,
+/**
+ * Logger setup
+ *
+ * @param {array} logdef
+ * @param {int}   level
+ *
+ * @return {array}
+ */
+function createLoggers(logdef = [], level = LoggingLevels.levels.info) {
+  return logdef.filter((def) => def !== null).map(
+      (def) => (options.path)
+      ? new FileTransport({level, path: path.resolve(def.path)})
+      : new ConsoleTransport({level}),
   );
 }
 
 module.exports = {
-  args: options,
-  loggers,
-  level,
-  payloadLoggers,
-  specFile: options.spec,
+  loggers: createLoggers(
+      [
+        !options.supressConsoleLogs ? {} : null,
+        options.logfile ? {path: options.logfile} : null,
+      ],
+      options.logLevel,
+  ),
+  level: options.logLevel,
+  owner: options.repo[0],
+  payloadLoggers: createLoggers(
+      [
+        !options.suppressConsoleHooks ? {} : null,
+        options.hookfile ? {path: options.hookfile} : null,
+      ],
+  ),
+  repo: options.repo[1],
+  spec: options.spec,
+  token: options.token,
+  port: options.port,
+  clear: options.clear,
 };
