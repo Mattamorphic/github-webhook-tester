@@ -18,39 +18,37 @@ How does this tool address this?
 ## Usage
 
 ### Basic startup
-`github-webhook-tester`
-- This uses the `./example/spec.js` blueprint
-- The `:owner/:repo` will be taken from the .env file
+`github-webhook-tester --token XXX --repo :owner/:repo`
+- This uses the `./example/basic.js` blueprint
+- This uses port 5000 for ngrok
+- The token option is an OAuth token with repo scope
+- The repo flag denotes the owner/repo to configure this on
 - Logging is configured for ALL events
 - Logging is defaulted to the console
 - All payloads are logged to the console
 
 ### Specify different spec file
-`github-webhook-tester --repo=:owner/:repo --spec=path/to/jsspec`
+`github-webhook-tester --token XXX --repo :owner/:repo --spec path/to/jsspec`
 - Same as above, but with a different blueprint
-- The repo is taken from the `--repo=:owner/:repo` option
 - This will use `path/to/jsspec`
 
 ### No console logging
-`github-webhook-tester --noConsoleLogging`
+`github-webhook-tester --token XXX --repo :owner/:repo --noConsoleLogging`
+- This uses the `./example/basic.js` blueprint
 - Don't print system logs, just webhook payloads
-- The `:owner/:repo` will be taken from the .env file
-- This will use `./example/spec.js`
 
 ### No payload logging, and info level logging  
-`github-webhook-tester --noConsoleOutput --logLevel=4`
+`github-webhook-tester --token XXX --repo :owner/:repo --noConsoleOutput --logLevel 4`
+- This uses the `./example/basic.js` blueprint
 - Don't print payload logs, just system logs
-- The `:owner/:repo` will be taken from the .env file
 - Listen for logs at info level
-- This will use `./example/spec.js`
 
 ### Console logging, File payload logging
-`mkdir logs && github-webhook-tester --noConsoleOutput --outputFile=./logs/payloads.log`
+`mkdir logs && github-webhook-tester --token XXX --repo :owner/:repo --noConsoleOutput --outputFile=./logs/payloads.log`
 - create a logs directory
 - Print system logs to the console
 - Print the payload logs to the output file designated in `--outputFile`
 - This will use `./example/spec.js`
-- The `:owner/:repo` will be taken from the .env file
 
 See a full breakdown of the options below
 
@@ -62,13 +60,19 @@ See a full breakdown of the options below
 
 - `--repo` Specify the target repository to manage the hooks on
 
-- `--fileLogging` Specify the file to write the system logs to (`--fileLogging=./logs/log.log`)
+- `--token` Specify the OAuth token with repo scope to use
 
-- `--noConsoleLogging` Switch off console logging
+- `--port` Specify the port to expose to ngrok, defaults to 5000
 
-- `--outputFile` Specify the file to write the webhook content to (`--outputFile=./logs/payload.log`)
+- `--logfile` Specify the file to write the system logs to (`--logfile ./logs/log.log`)
 
-- `--noConsoleOutput` Switch off console output of the payloads
+- `--suppressConsoleLogs` Switch off console logging
+
+- `--hookfile` Specify the file to write the webhook content to (`--hookfile ./logs/payload.log`)
+
+- `--suppressConsoleHooks` Switch off console output of the payloads
+
+- `--suppressConsole` Switch off all console output
 
 ## Blueprint, a how to...
 

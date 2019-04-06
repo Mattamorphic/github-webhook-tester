@@ -11,7 +11,6 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const port = process.env.PORT;
 const ngrok = require('ngrok');
 
 // Console arguments and preconfiguration (i.e. logger config setups)
@@ -54,7 +53,7 @@ app.use((req, res, next) => {
 });
 
 // Fetch a spec, use './example/spec.js' as default
-const spec = require(options.specFile);
+const spec = require(options.spec);
 
 // Validate the spec
 
@@ -81,9 +80,10 @@ Object.keys(spec).forEach((route) => {
   }
   logger.info(`Building API: ${spec[route].verb.toUpperCase()} ${endpoint}`);
   app[spec[route].verb](endpoint, spec[route].callback);
+  app['get'](endpoint, (req, res) => res.status(200).send('OK'));
 });
 
-const server = app.listen(port, () => {
+const server = app.listen(options.port, () => {
   logger.info('API Server listening on ', server.address().port);
 });
 
@@ -107,8 +107,8 @@ async function genNgrokURL(port) {
  * exist in our spec, and create these with the new ngrok tunnel
  */
 (async function() {
-  const url = await genNgrokURL(port);
-  logger.info(`Ngrok tunnel established on: ${url}`);
+  const url = await genNgrokURL(options.port);
+  logger.info(`Ngrok tunnel established on: ${url}:${options.port}`);
 
   // Create our hook manager
   const GitHub = require('../lib/GitHub');
@@ -116,9 +116,9 @@ async function genNgrokURL(port) {
       `Configuring GitHub Hooks with ${options.owner}/${options.repo}`,
   );
   const github = new GitHub(
-    process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
-    options.owner,
-    options.repo,
+      options.token,
+      options.owner,
+      options.repo,
   );
   const HookManager = require('../lib/HookManager');
   const hookManager = new HookManager(github);
@@ -129,7 +129,11 @@ async function genNgrokURL(port) {
   // If we have hooks, then look for conflicting/dead hooks and remove these
   if (hookManager.hooks.length > 0) {
     logger.debug(`Deleting ngrok hooks: ngrok.io/${endpoints.join('|')}`);
-    await hookManager.genCheckAndDeleteNgrokHooks(endpoints);
+    if (!options.clear) {
+      await hookManager.genCheckAndDeleteNgrokHooks(endpoints);
+    } else {
+      await hookManager.genDeleteAllNgrokHooks();
+    }
   }
   await hookManager.genCreateWebhooks(url, spec);
 })();
