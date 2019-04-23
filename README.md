@@ -103,9 +103,8 @@ From github
 
 2. `npm link` to locally link the bin file to your bash profile
 
-3. Setup your .env file `mv .env.template .env` then populate what it asks for :wink:
-
-4. Setup a free ngrok.io account [ngrok](https://ngrok.com/) and setup the token (see the account page)
+Then...
+- Setup a free ngrok.io account [ngrok](https://ngrok.com/) and setup the token (see the account page)
 
 
 ## TODO List

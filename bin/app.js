@@ -5,8 +5,6 @@
  */
 'use strict';
 
-require('dotenv').config();
-
 // Express JS imports
 const express = require('express');
 const app = express();
