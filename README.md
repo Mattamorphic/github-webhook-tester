@@ -95,25 +95,16 @@ For each of these endpoints we provide:
 
 
 ## Installation
-From npm (soon!)
-1. Installing the base app `npm install github-webhook-tester`
-
-From github
-1. `git clone git@github.com:Mattamorphic/github-webhook-tester.git`
-
-2. `npm link` to locally link the bin file to your bash profile
-
-Then...
-- Setup a free ngrok.io account [ngrok](https://ngrok.com/) and setup the token (see the account page)
+`npm install -g github-webhook-tester`
+Don't forget to setup a free ngrok.io account [ngrok](https://ngrok.com/) and setup the token (see the account page)
 
 
 ## TODO List
 
 1. Finish the command line options
 2. Add tests to maintain stability and integrity
-3. Add to npm
-4. Add more spec examples
-5. Add further logging transport layers
+3. Add more spec examples
+4. Add further logging transport layers
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
