@@ -44,11 +44,11 @@ How does this tool address this?
 - Listen for logs at info level
 
 ### Console logging, File payload logging
-`mkdir logs && github-webhook-tester --token XXX --repo :owner/:repo --noConsoleOutput --outputFile=./logs/payloads.log`
+`mkdir logs && github-webhook-tester --token XXX --repo :owner/:repo --noConsoleOutput --hookfile=./logs/payloads.log`
 - create a logs directory
 - Print system logs to the console
 - Print the payload logs to the output file designated in `--outputFile`
-- This will use `./example/spec.js`
+- This will use `./example/basic.js`
 
 See a full breakdown of the options below
 

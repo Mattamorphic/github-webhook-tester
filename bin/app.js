@@ -21,7 +21,6 @@ const payloadLogger = new Logger(options.payloadLoggers);
 logger.debug(`Loggers enabled for: ${options.level} log level`);
 module.exports = logger;
 
-
 // Application/json parser
 app.use(bodyParser.json());
 // Application/x-www-form-urlencoded parser

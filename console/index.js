@@ -69,7 +69,7 @@ if (!options.token) {
  */
 function createLoggers(logdef = [], level = LoggingLevels.levels.info) {
   return logdef.filter((def) => def !== null).map(
-      (def) => (options.path)
+      (def) => (def.path)
       ? new FileTransport({level, path: path.resolve(def.path)})
       : new ConsoleTransport({level}),
   );
@@ -78,7 +78,7 @@ function createLoggers(logdef = [], level = LoggingLevels.levels.info) {
 module.exports = {
   loggers: createLoggers(
       [
-        !options.supressConsoleLogs ? {} : null,
+        !options.suppressConsoleLogs ? {} : null,
         options.logfile ? {path: options.logfile} : null,
       ],
       options.logLevel,

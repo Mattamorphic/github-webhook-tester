@@ -48,7 +48,7 @@ const options = [
     type: String, // TODO check file exists or is writable dir
   },
   {
-    name: 'supressConsoleLogs',
+    name: 'suppressConsoleLogs',
     description: 'Turn off console logging',
     type: Boolean,
   },
