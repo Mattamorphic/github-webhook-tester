@@ -1,6 +1,6 @@
 {
   "name": "github-webhook-tester",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A Github Webhook Testing Tool",
   "main": "bin/app.js",
   "repository": "https://github.com/Mattamorphic/github-webhook-tester",
@@ -11,7 +11,7 @@
     "github-webhook-tester": "bin/app.js"
   },
   "author": "Mattamorphic <mfmbarber@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^16.15.0",
     "cli-color": "^1.4.0",

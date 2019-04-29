@@ -64,7 +64,7 @@ const options = [
     type: Boolean,
   },
   {
-    name: 'supressConsole',
+    name: 'suppressConsole',
     description: 'Turn off console output for logging and payloads',
     type: Boolean,
   },
