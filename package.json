@@ -13,7 +13,7 @@
   "author": "Mattamorphic <mfmbarber@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "^16.15.0",
+    "@octokit/rest": "^17.9.1",
     "cli-color": "^1.4.0",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5",
